@@ -9,6 +9,10 @@ defmodule Api.Router do
     send_resp(conn, 200, "world")
   end
 
+  get "/ws" do
+    WebSockAdapter.upgrade(conn, Api.PeerHandler, %{}, [])
+  end
+
   match _ do
     send_resp(conn, 404, "Not Found")
   end
