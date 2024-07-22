@@ -1,15 +1,15 @@
 defmodule Api.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
-  @moduledoc false
-
   use Application
+
+  @ip Application.compile_env!(:api, :ip)
+  @port Application.compile_env!(:api, :port)
+
+  alias Api.Router
 
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: Api.Worker.start_link(arg)
-      # {Api.Worker, arg}
+      {Bandit, plug: Router, ip: @ip, port: @port}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
