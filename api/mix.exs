@@ -23,7 +23,8 @@ defmodule Api.MixProject do
   defp deps do
     [
       {:bandit, "~> 1.2.0"},
-      {:websock_adapter, "~> 0.5.0"}
+      {:websock_adapter, "~> 0.5.0"},
+      {:ex_webrtc, "~> 0.3.0"}
     ]
   end
 end
