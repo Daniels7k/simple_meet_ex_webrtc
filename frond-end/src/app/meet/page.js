@@ -1,14 +1,17 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const PeerPage = () => {
+    const myVideoRef = useRef(null);
     const [wsConnection, setWsConnection] = useState(null);
-
 
 
     useEffect(() => {
         const wsConnection = startWsConnection();
+        setWsConnection(wsConnection);
+
+        setupUserMedia(myVideoRef);
 
         return () => {
             wsConnection.close();
@@ -34,7 +37,7 @@ const PeerPage = () => {
     return (
         <div>
             <p>Hello World!</p>
-
+            <video className='w-72' playsInline ref={myVideoRef} autoPlay />
             <button onClick={sendPingToWs}>Send Ping to WS</button>
             <button onClick={sendAnOffer}>Send Offer to WS</button>
 
@@ -58,6 +61,19 @@ const startWsConnection = () => {
     });
 
     return wsConnection;
+}
+
+const setupUserMedia = (videoRef) => {
+    navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+    }).then(stream => {
+        if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+        }
+    }).catch(error => {
+        console.error("Error getting user media:", error);
+    });
 }
 
 export default PeerPage;
