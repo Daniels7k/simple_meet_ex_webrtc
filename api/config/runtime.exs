@@ -39,7 +39,8 @@ if config_env() == :prod do
   config :api, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :api, ApiWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
+    server: true,
+    url: [host: System.get_env("RENDER_EXTERNAL_HOSTNAME") || "localhost", port: 80],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
