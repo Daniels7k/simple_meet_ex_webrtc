@@ -12,7 +12,7 @@ config :api,
 
 # Configures the endpoint
 config :api, ApiWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: System.get_env("RENDER_EXTERNAL_HOSTNAME") || "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [json: ApiWeb.ErrorJSON],
