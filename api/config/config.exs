@@ -19,7 +19,11 @@ config :api, ApiWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Api.PubSub,
-  live_view: [signing_salt: "SkXyOeyz"]
+  live_view: [signing_salt: "SkXyOeyz"],
+  check_origin: [
+    "https://simple-meet-ex-webrtc-1.onrender.com",
+    "//localhost"
+  ]
 
 # Configures the mailer
 #
