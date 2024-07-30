@@ -17,7 +17,7 @@ let localStream = null;
 let remoteStream = null;
 
 // WEBSOCKET  
-const wsConnection = new WebSocket("ws://localhost:4001/socket/websocket");
+const wsConnection = new WebSocket("wss://simple-meet-ex-webrtc.onrender.com/socket/websocket");
 
 wsConnection.addEventListener("message", (event) => {
   console.log("Message from server ", event.data);
