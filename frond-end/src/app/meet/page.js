@@ -10,13 +10,44 @@ const PeerPage = () => {
     useEffect(() => {
         const wsConnection = startWsConnection();
         setWsConnection(wsConnection);
-
         setupUserMedia(myVideoRef);
+        startPeerConnection(myVideoRef);
+
 
         return () => {
             wsConnection.close();
         }
     }, []);
+
+    const startPeerConnection = async () => {
+        const config = { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' },] };
+
+        const peerConnection = new RTCPeerConnection(config);
+
+        const localStream = myVideoRef.current?.srcObject;
+
+        let videoTrack = null;
+
+        if (localStream) {
+            videoTrack = localStream.getVideoTracks()[0];
+
+            peerConnection.addTransceiver(videoTrack, { direction: 'sendrecv', streams: [localStream] });
+
+            const offer = await npeerConnection.createOffer();
+
+            await peerConnection.setLocalDescription(offer);
+            console.log("Sent SDP offer:", offer)
+
+
+            wsConnection.send(JSON.stringify({ type: "offer", data: offer }));
+        }
+
+        console.log("Local video track: ", videoTrack);
+
+
+
+
+    }
 
     const sendPingToWs = () => {
         if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
@@ -41,9 +72,13 @@ const PeerPage = () => {
             <button onClick={sendPingToWs}>Send Ping to WS</button>
             <button onClick={sendAnOffer}>Send Offer to WS</button>
 
+            <button onClick={startPeerConnection}>Start Peer Connection</button>
+
         </div>
     );
 };
+
+
 
 const startWsConnection = () => {
     const wsConnection = new WebSocket("ws://localhost:4000/ws");
