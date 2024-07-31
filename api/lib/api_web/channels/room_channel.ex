@@ -56,7 +56,12 @@ defmodule ApiWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("shout", %{"type" => "ice_candidate", "candidate" => candidate} = payload, socket) do
+  def handle_in(
+        "shout",
+        %{"type" => "ice_candidate", "candidate" => candidate, "player_id" => player_id} =
+          payload,
+        socket
+      ) do
     broadcast(socket, "shout", payload)
     {:noreply, socket}
   end

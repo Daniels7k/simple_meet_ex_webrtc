@@ -2,6 +2,8 @@ import './style.css';
 
 
 // Global State
+const offer_player_id = 1;
+const answer_player_id = 2;
 
 const servers = {
   iceServers: [
@@ -17,10 +19,11 @@ let localStream = null;
 let remoteStream = null;
 
 // WEBSOCKET  
-const wsConnection = new WebSocket("wss://simple-meet-ex-webrtc.onrender.com/socket/websocket");
+const wsConnection = new WebSocket("ws://localhost:4001/socket/websocket");
 
-wsConnection.addEventListener("message", (event) => {
-  console.log("Message from server ", event.data);
+wsConnection.addEventListener("message", (_event) => {
+
+
 });
 
 wsConnection.addEventListener("open", () => {
@@ -86,15 +89,17 @@ webcamButton.onclick = async () => {
 
 // 2. Create an offer
 callButton.onclick = async () => {
-  console.log("call button clicked");
+
   // Get candidates for caller, save to db
   pc.onicecandidate = (event) => {
     if (event.candidate) {
+      console.log("Offer sending ice candidate to answer.");
       wsConnection.send(JSON.stringify({
         topic: "room:lobby",
         event: "shout",
         payload: {
           type: "ice_candidate",
+          player_id: offer_player_id,
           candidate: event.candidate.toJSON()
         },
         ref: ""
@@ -131,7 +136,6 @@ callButton.onclick = async () => {
       console.log("Received answer from remote peer.");
       const remoteAnswer = data;
       const remoteAnswerDescription = new RTCSessionDescription(remoteAnswer);
-      console.log(remoteAnswerDescription);
       pc.setRemoteDescription(remoteAnswerDescription);
     }
   });
@@ -144,7 +148,7 @@ callButton.onclick = async () => {
 
     const data = rawData.payload;
 
-    if (data.type === "ice_candidate") {
+    if (data.type === "ice_candidate" && data.player_id !== offer_player_id) {
       console.log("Received ice candidate from offer.");
 
       const candidate = new RTCIceCandidate(data.candidate);
@@ -158,12 +162,15 @@ callButton.onclick = async () => {
 answerButton.onclick = async () => {
 
   pc.onicecandidate = (event) => {
+
     if (event.candidate) {
+      console.log("Answer sending ice candidate to offer.");
       wsConnection.send(JSON.stringify({
         topic: "room:lobby",
         event: "shout",
         payload: {
           type: "ice_candidate",
+          player_id: answer_player_id,
           candidate: event.candidate.toJSON()
         },
         ref: ""
@@ -186,7 +193,7 @@ answerButton.onclick = async () => {
 
     const data = rawData.payload;
 
-    if (data.type === "ice_candidate") {
+    if (data.type === "ice_candidate" && data.player_id !== answer_player_id) {
       console.log("Received ice candidate from offer.");
 
       const candidate = new RTCIceCandidate(data.candidate);
