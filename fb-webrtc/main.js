@@ -40,7 +40,15 @@ wsConnection.addEventListener("close", () => {
 });
 
 
-
+// ws heartbeat
+setInterval(() => {
+  wsConnection.send(JSON.stringify({
+    topic: "room:lobby",
+    event: "ping",
+    payload: {},
+    ref: ""
+  }));
+}, 30000);
 // HTML elements
 const webcamButton = document.getElementById('webcamButton');
 const webcamVideo = document.getElementById('webcamVideo');
