@@ -89,17 +89,17 @@ callButton.onclick = async () => {
   console.log("call button clicked");
   // Get candidates for caller, save to db
   pc.onicecandidate = (event) => {
-
-    wsConnection.send(JSON.stringify({
-      topic: "room:lobby",
-      event: "shout",
-      payload: {
-        type: "ice_candidate",
-        candidate: event.candidate.toJSON()
-      },
-      ref: ""
-    }));
-    event.candidate && offerCandidates.add(event.candidate.toJSON());
+    if (event.candidate) {
+      wsConnection.send(JSON.stringify({
+        topic: "room:lobby",
+        event: "shout",
+        payload: {
+          type: "ice_candidate",
+          candidate: event.candidate.toJSON()
+        },
+        ref: ""
+      }));
+    }
   };
 
   const offerDescription = await pc.createOffer();
@@ -158,16 +158,17 @@ callButton.onclick = async () => {
 answerButton.onclick = async () => {
 
   pc.onicecandidate = (event) => {
-    wsConnection.send(JSON.stringify({
-      topic: "room:lobby",
-      event: "shout",
-      payload: {
-        type: "ice_candidate",
-        candidate: event.candidate.toJSON()
-      },
-      ref: ""
-    }));
-    event.candidate && offerCandidates.add(event.candidate.toJSON());
+    if (event.candidate) {
+      wsConnection.send(JSON.stringify({
+        topic: "room:lobby",
+        event: "shout",
+        payload: {
+          type: "ice_candidate",
+          candidate: event.candidate.toJSON()
+        },
+        ref: ""
+      }));
+    }
   };
 
   // GET OFFER FROM WEBSOCKET STATE
